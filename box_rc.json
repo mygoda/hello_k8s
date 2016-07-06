@@ -1,0 +1,68 @@
+{
+  "apiVersion": "v1",
+  "kind": "ReplicationController",
+  "metadata": {
+    "name": "box-rc",
+    "labels": {
+      "name": "busybox"
+    }
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+      "name": "busybox"
+    },
+    "template": {
+      "metadata": {
+        "name": "busybox",
+        "labels": {
+          "name": "busybox"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "busybox",
+            "image": "ubuntu",
+			"volumeMounts": [
+				{
+				"name": "volume1",
+				"mountPath": "/data"
+				}
+			],
+			"command": ["/bin/sh", "-c", "while true; do ls /data; sleep 1; done"],
+			"env": [
+				{
+					"name": "MY_POD_NAME",
+					"valueFrom": {
+						"fieldRef": {
+							"fieldPath": "metadata.name"
+							}
+					}
+				},
+				{
+					"name": "TEST",
+					"value": "v111"
+				}
+			],	
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8888,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ],
+		"volumes": [
+                {
+                    "name": "volume1",
+                    "hostPath":{
+                        "path": "/data"
+                	}
+				}
+            ]
+      }
+    }
+  }
+}
